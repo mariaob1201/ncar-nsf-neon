@@ -14,5 +14,12 @@ RUN if [ -s /tmp/requirements.txt ] && grep -qvE '^\s*(#|$)' /tmp/requirements.t
         pip install --no-cache-dir -r /tmp/requirements.txt; \
     fi
 
+# Install reusable Python modules at /opt/analytics_modules so they can be
+# imported from any notebook as `from analytics_modules.<name> import ...`.
+USER root
+COPY --chown=user:cesm analytics_modules/ /opt/analytics_modules/
+ENV PYTHONPATH="/opt:${PYTHONPATH}"
+USER user
+
 # Drop in custom notebooks / analysis code.
 COPY --chown=user:cesm notebooks/ /home/user/notebooks/
