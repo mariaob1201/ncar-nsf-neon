@@ -1,0 +1,4 @@
+# Add Python packages to install on top of escomp/cesm-lab-neon here.
+# Example:
+# xarray==2024.10.0
+# netcdf4
