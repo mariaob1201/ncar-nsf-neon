@@ -19,6 +19,12 @@ RUN if [ -s /tmp/requirements.txt ] && grep -qvE '^\s*(#|$)' /tmp/requirements.t
 USER root
 COPY --chown=user:cesm analytics_modules/ /opt/analytics_modules/
 ENV PYTHONPATH="/opt:${PYTHONPATH}"
+
+# Drop extended NEON wrapper next to the upstream run_neon.py so it inherits
+# the same CTSM/CIME relative imports (_CTSM_PYTHON resolves to /opt/ncar/cesm/python).
+COPY --chown=user:cesm --chmod=0755 \
+     cesm-tools/site_and_regional/run_neon_v2.py \
+     /opt/ncar/cesm/tools/site_and_regional/run_neon_v2.py
 USER user
 
 # Drop in custom notebooks / analysis code.
