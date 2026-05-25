@@ -1,5 +1,6 @@
 """Diagnostic plots and metrics for evaluating model misfit against observations."""
 from __future__ import annotations
+import matplotlib.pyplot as plt
 
 import numpy as np
 
@@ -16,8 +17,6 @@ def residuals_plots(y_obs, y_pred, bins: int = 40, savepath: str | None = None):
     matplotlib is imported lazily so the module can be imported in headless contexts
     that never call this function.
     """
-    import matplotlib.pyplot as plt
-
     y_obs = np.asarray(y_obs, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
     mask = np.isfinite(y_obs) & np.isfinite(y_pred)
