@@ -21,16 +21,22 @@ RUN if [ -s /tmp/requirements.txt ] && grep -qvE '^\s*(#|$)' /tmp/requirements.t
     fi
 
 # Install reusable Python modules at /opt/analytics_modules so they can be
-# imported from any notebook as `from analytics_modules.<name> import ...`.
+# imported from any notebook either as `from analytics_modules.<name> import ...`
+# (preferred) or as `from <name> import ...` (legacy notebooks).
 USER root
 COPY --chown=user:cesm analytics_modules/ /opt/analytics_modules/
-ENV PYTHONPATH="/opt:${PYTHONPATH}"
+ENV PYTHONPATH="/opt:/opt/analytics_modules:${PYTHONPATH}"
 
 # Drop extended NEON wrapper next to the upstream run_neon.py so it inherits
 # the same CTSM/CIME relative imports (_CTSM_PYTHON resolves to /opt/ncar/cesm/python).
 COPY --chown=user:cesm --chmod=0755 \
      cesm-tools/site_and_regional/run_neon_v2.py \
      /opt/ncar/cesm/tools/site_and_regional/run_neon_v2.py
+
+# Expose both NEON runners as PATH-resolvable commands (no .py suffix) so
+# notebook %%bash cells can call them as `run_neon` / `run_neon_v2`.
+RUN ln -sf /opt/ncar/cesm/tools/site_and_regional/run_neon.py     /usr/local/bin/run_neon \
+ && ln -sf /opt/ncar/cesm/tools/site_and_regional/run_neon_v2.py  /usr/local/bin/run_neon_v2
 USER user
 
 # Drop in custom notebooks / analysis code.

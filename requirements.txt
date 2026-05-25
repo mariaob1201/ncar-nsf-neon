@@ -7,3 +7,8 @@
 # single-user server (see deploy/jupyterhub/). The image stays usable
 # standalone — Hub just overrides the entrypoint to jupyterhub-singleuser.
 jupyterhub
+
+# Used by analytics_modules.llm_interaction. Notebooks that don't call
+# ask_llm work fine without an API key; set OPENAI_API_KEY at runtime
+# (via .env at the Hub level, or per-container) to actually use it.
+openai
