@@ -1,0 +1,32 @@
+name: ncar-nsf-neon-hub
+
+services:
+  jupyterhub:
+    build:
+      context: .
+      dockerfile: Dockerfile.hub
+    image: ncar-nsf-neon-hub:latest
+    container_name: jupyterhub
+    restart: unless-stopped
+    networks:
+      - hub
+    ports:
+      # If you put Caddy/nginx in front for HTTPS, change to "127.0.0.1:8000:8000"
+      - "${HUB_PORT:-8000}:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - hub_data:/srv/jupyterhub
+      - ./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro
+    environment:
+      DOCKER_NETWORK_NAME: ncar-nsf-neon-hub_hub
+      DOCKER_SPAWN_IMAGE: ${DOCKER_SPAWN_IMAGE:-ghcr.io/mariaob1201/ncar-nsf-neon:latest}
+      JUPYTERHUB_ADMIN_USERS: ${JUPYTERHUB_ADMIN_USERS:-admin}
+      JUPYTERHUB_MEM_LIMIT: ${JUPYTERHUB_MEM_LIMIT:-4G}
+      JUPYTERHUB_CPU_LIMIT: ${JUPYTERHUB_CPU_LIMIT:-2}
+
+networks:
+  hub:
+    name: ncar-nsf-neon-hub_hub
+
+volumes:
+  hub_data:

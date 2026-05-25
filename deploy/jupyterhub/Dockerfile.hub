@@ -1,0 +1,9 @@
+FROM jupyterhub/jupyterhub:5.2
+
+# DockerSpawner       - launches one container per logged-in user
+# NativeAuthenticator - username/password auth with admin-approved signup
+RUN pip install --no-cache-dir \
+        dockerspawner==13.0.0 \
+        jupyterhub-nativeauthenticator==1.3.0
+
+WORKDIR /srv/jupyterhub

@@ -2,3 +2,8 @@
 # Example:
 # xarray==2024.10.0
 # netcdf4
+
+# Required so JupyterHub's DockerSpawner can launch this image as a
+# single-user server (see deploy/jupyterhub/). The image stays usable
+# standalone — Hub just overrides the entrypoint to jupyterhub-singleuser.
+jupyterhub

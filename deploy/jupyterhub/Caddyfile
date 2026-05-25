@@ -1,0 +1,38 @@
+# Optional reverse proxy with automatic Let's Encrypt HTTPS.
+#
+# To use:
+#   1. Point a DNS A record at this VM (e.g. hub.example.com -> <vm-ip>)
+#   2. Replace {$DOMAIN} below with your hostname
+#   3. In docker-compose.yml change jupyterhub's ports line to:
+#        ports: ["127.0.0.1:8000:8000"]
+#      so the Hub is only reachable through Caddy.
+#   4. Add a second compose service:
+#        caddy:
+#          image: caddy:2-alpine
+#          restart: unless-stopped
+#          ports:
+#            - "80:80"
+#            - "443:443"
+#          volumes:
+#            - ./Caddyfile:/etc/caddy/Caddyfile:ro
+#            - caddy_data:/data
+#            - caddy_config:/config
+#          networks: [hub]
+#      And add `caddy_data:` and `caddy_config:` under top-level volumes.
+#   5. docker compose up -d
+
+{$DOMAIN} {
+    reverse_proxy jupyterhub:8000
+
+    # JupyterHub uses websockets for kernel comms — Caddy handles upgrades
+    # transparently, but make timeouts generous for long-running compute.
+    @kernel path /user/*/api/kernels/* /user/*/api/events/subscribe
+    reverse_proxy @kernel jupyterhub:8000 {
+        transport http {
+            read_timeout 24h
+            write_timeout 24h
+        }
+    }
+
+    encode gzip
+}

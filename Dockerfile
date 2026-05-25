@@ -5,6 +5,12 @@ USER root
 # Place to install extra OS packages if needed:
 # RUN dnf install -y <packages> && dnf clean all
 
+# Make conda binaries reachable even when the base image's entrypoint is
+# bypassed (e.g. when JupyterHub's DockerSpawner launches jupyterhub-singleuser
+# directly). Without this, jupyterhub-singleuser, jupyter, etc. would only
+# resolve to /opt/ncar/conda/bin via the entrypoint's conda activation.
+ENV PATH="/opt/ncar/conda/bin:${PATH}"
+
 USER user
 
 # Add Python deps on top of the base CESM conda environment.
